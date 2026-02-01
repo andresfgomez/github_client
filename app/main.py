@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.routers import pull_requests, repositories
+from app.routers import files, pull_requests, repositories
 
 app = FastAPI(
     title="GitHub Client API",
@@ -10,6 +10,7 @@ app = FastAPI(
 
 app.include_router(repositories.router)
 app.include_router(pull_requests.router)
+app.include_router(files.router)
 
 
 @app.get("/health")
