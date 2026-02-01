@@ -3,7 +3,14 @@ from typing import Any
 import httpx
 
 from app.config import settings
-from app.models import Approver, PaginatedResponse, PullRequest, Repository
+from app.models import (
+    Approver,
+    FileContent,
+    FileItem,
+    PaginatedResponse,
+    PullRequest,
+    Repository,
+)
 
 
 class GitHubClient:
@@ -195,6 +202,33 @@ class GitHubClient:
             per_page=len(approvers),
             has_next=False,
         )
+
+    async def list_files(
+        self,
+        owner: str,
+        repo: str,
+        path: str = "",
+    ) -> list[FileItem]:
+        endpoint = f"/repos/{owner}/{repo}/contents"
+        if path:
+            endpoint = f"{endpoint}/{path}"
+        data = await self._request("GET", endpoint)
+        if isinstance(data, dict):
+            # Single file returned, wrap in list
+            data = [data]
+        return [FileItem.model_validate(item) for item in data]
+
+    async def get_file_content(
+        self,
+        owner: str,
+        repo: str,
+        path: str,
+    ) -> FileContent:
+        data = await self._request(
+            "GET",
+            f"/repos/{owner}/{repo}/contents/{path}",
+        )
+        return FileContent.model_validate(data)
 
 
 github_client = GitHubClient()

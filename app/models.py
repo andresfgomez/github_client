@@ -42,6 +42,24 @@ class Approver(BaseModel):
     repositories: list[str]
 
 
+class FileItem(BaseModel):
+    name: str
+    path: str
+    type: str  # "file" or "dir"
+    size: int
+    html_url: str
+    download_url: str | None
+
+
+class FileContent(BaseModel):
+    name: str
+    path: str
+    size: int
+    content: str
+    encoding: str
+    html_url: str
+
+
 class PaginatedResponse(BaseModel, Generic[T]):
     items: list[T]
     total_count: int
